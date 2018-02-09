@@ -70,3 +70,62 @@ To prevent it from becoming overloaded, please avoid querying the standard
 `pool.ntp.org` zone names in your applications.  Instead, consider requesting
 your own [vendor zone](http://www.pool.ntp.org/en/vendors.html) or [joining
 the pool](http://www.pool.ntp.org/join.html).
+
+## Brasil
+
+```
+package main
+
+import (
+  "time"
+  "fmt"
+  "github.com/beevik/ntp"
+)
+
+func main(){
+  
+  timeZone := map[string]string{
+    `AC`:`America/Rio_Branco`,
+    `AL`:`America/Maceio`,
+    `AP`:`America/Belem`,
+    `AM`:`America/Manaus`,
+    `BA`:`America/Bahia`,
+    `CE`:`America/Fortaleza`,
+    `DF`:`America/Sao_Paulo`,
+    `ES`:`America/Sao_Paulo`,
+    `GO`:`America/Sao_Paulo`,
+    `MA`:`America/Fortaleza`,
+    `MT`:`America/Cuiaba`,
+    `MS`:`America/Campo_Grande`,
+    `MG`:`America/Sao_Paulo`,
+    `PR`:`America/Sao_Paulo`,
+    `PB`:`America/Fortaleza`,
+    `PA`:`America/Belem`,
+    `PE`:`America/Recife`,
+    `PI`:`America/Fortaleza`,
+    `RJ`:`America/Sao_Paulo`,
+    `RN`:`America/Fortaleza`,
+    `RS`:`America/Sao_Paulo`,
+    `RO`:`America/Porto_Velho`,
+    `RR`:`America/Boa_Vista`,
+    `SC`:`America/Sao_Paulo`,
+    `SE`:`America/Maceio`,
+    `SP`:`America/Sao_Paulo`,
+    `TO`:`America/Araguaina`,
+  }
+
+  list := []string{`AC`, `AL`, `AP`, `AM`, `BA`, `CE`, `DF`, `ES`, `GO`, `MA`, `MT`, `MS`, `MG`, `PR`, `PB`, `PA`, `PE`, `PI`, `RJ`, `RN`, `RS`, `RO`, `RR`, `SC`, `SE`, `SP`, `TO`}
+
+  response, err := ntp.Query("0.beevik-ntp.pool.ntp.org")
+  if err != nil {
+    fmt.Printf("error: %v\n", err.Error())
+  }
+  for _, v := range list {
+    loc, _ := time.LoadLocation(timeZone[v])
+
+    now := response.Time
+    then := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), 0, 0, time.UTC).In(loc).Add(response.ClockOffset)
+    fmt.Printf("%v [ %v ]: %v:%v\n", v, timeZone[v], then.Hour(), then.Minute())
+  }
+}
+```
